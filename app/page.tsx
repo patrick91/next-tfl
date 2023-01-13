@@ -1,91 +1,90 @@
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import { gql, useQuery } from "@apollo/client";
+import { client } from "../lib/client";
+
+const QUERY = gql`
+  fragment BusStopFragment on BusStop {
+    arrivals {
+      id
+      lineName
+      timeToStation
+    }
+  }
+
+  query FindBusStop {
+    findBusStop(latitude: 51.506169, longitude: -0.088411) {
+      id
+      commonName
+      buses
+      stopLetter
+      towards
+      ...BusStopFragment @defer
+    }
+  }
+`;
+
+const StopLetter = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="bg-red-600 rounded-full font-bold text-white flex w-8 h-8 text-base items-center justify-center">
+      {children}
+    </div>
+  );
+};
+
+const BusStop = ({ stop }) => {
+  return (
+    <li
+      key={stop.id}
+      className="grid items-start gap-4 grid-cols-[32px,1fr] mb-4"
+    >
+      <div className="self-center">
+        <StopLetter>{stop.stopLetter}</StopLetter>
+      </div>
+      <div>
+        <h1 className="font-bold text-2xl">
+          <div>
+            <p>{stop.commonName}</p>
+            <p className="text-sm">Towards: {stop.towards}</p>
+          </div>
+        </h1>
+        {stop.arrivals === undefined && <p>Loading...</p>}
+        {stop.arrivals !== undefined && stop.arrivals.length === 0 && (
+          <p>No arrival...</p>
+        )}
+      </div>
+      <div></div>
+      <div>
+        {stop.arrivals !== undefined && stop.arrivals.length > 0 && (
+          <ul>
+            {stop.arrivals.map((arrival, index) => (
+              <li key={index}>
+                <strong>{arrival.lineName}</strong> in {arrival.timeToStation}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </li>
+  );
+};
 
 export default function Home() {
+  const { loading, error, data } = useQuery(QUERY, { client });
+
+  if (loading) return <p>Loading...</p>;
+
+  if (error) return <p>Error :(</p>;
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <div>
+      <ul>
+        {data.findBusStop.map((stop) => (
+          <BusStop key={stop.id} stop={stop} />
+        ))}
+      </ul>
+    </div>
+  );
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+  return <h1 className="text-3xl font-bold underline">Hello world!</h1>;
 }
