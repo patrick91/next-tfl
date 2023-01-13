@@ -32,7 +32,22 @@ const StopLetter = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const BusStop = ({ stop }) => {
+const BusStop = ({
+  stop,
+}: {
+  stop: {
+    id: string;
+    commonName: string;
+    buses: string[];
+    stopLetter?: string;
+    towards?: string;
+    arrivals?: {
+      id: string;
+      lineName: string;
+      timeToStation: number;
+    }[];
+  };
+}) => {
   return (
     <li
       key={stop.id}
@@ -79,7 +94,8 @@ export default function Home() {
   return (
     <div>
       <ul>
-        {data.findBusStop.map((stop) => (
+        {/* TODO: use codegen here */}
+        {data.findBusStop.map((stop: any) => (
           <BusStop key={stop.id} stop={stop} />
         ))}
       </ul>
