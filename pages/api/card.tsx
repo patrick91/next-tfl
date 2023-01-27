@@ -2,7 +2,6 @@ import { ImageResponse } from "@vercel/og";
 import { gql } from "@apollo/client";
 
 import { NextRequest } from "next/server";
-import { client } from "../../lib/client";
 
 export const config = {
   runtime: "experimental-edge",
@@ -124,6 +123,9 @@ export default async function handler(req: NextRequest) {
       width: 240,
       height: 300,
       emoji: "twemoji",
+      headers: {
+        "Cache-Control": "public, max-age=5",
+      }
     }
   );
 }
