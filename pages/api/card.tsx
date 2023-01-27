@@ -40,12 +40,23 @@ export default async function handler(req: NextRequest) {
 
   const stop = searchParams.get("stop");
 
-  const { data, error } = await client.query({
-    query: QUERY,
-    variables: {
-      busStopId: stop,
-    },
-  });
+  const response = await fetch(
+    "https://main--strawberry-graphql-e6z1v7.apollographos.net/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: QUERY.loc!.source.body,
+        variables: {
+          busStopId: stop,
+        },
+      }),
+    }
+  ).then((res) => res.json());
+
+  const data = response.data;
 
   return new ImageResponse(
     (
