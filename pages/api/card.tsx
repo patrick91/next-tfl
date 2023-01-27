@@ -1,6 +1,8 @@
 import { ImageResponse } from "@vercel/og";
+import { gql } from "@apollo/client";
 
 import { NextRequest } from "next/server";
+import { client } from "../../lib/client";
 
 export const config = {
   runtime: "experimental-edge",
@@ -13,16 +15,37 @@ const Row = ({ number, inTime }: { number: number; inTime: string }) => (
   </div>
 );
 
+const QUERY = gql`
+  fragment BusStopFragment on BusStop {
+    arrivals {
+      lineName
+      timeToStation
+    }
+  }
+
+  query FindBusStop($busStopId: ID!) {
+    busStop(id: $busStopId) {
+      id
+      commonName
+      buses
+      stopLetter
+      towards
+      ...BusStopFragment
+    }
+  }
+`;
+
 export default async function handler(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
-  let title = searchParams.get("title");
+  const stop = searchParams.get("stop");
 
-  if (!title) {
-    title = "Hello World!";
-  } else {
-    title = decodeURIComponent(escape(atob(title)));
-  }
+  const { data, error } = await client.query({
+    query: QUERY,
+    variables: {
+      busStopId: stop,
+    },
+  });
 
   return new ImageResponse(
     (
@@ -61,8 +84,8 @@ export default async function handler(req: NextRequest) {
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {" "}
-            <div>Ranelagh Road</div>
-            <div style={{ fontSize: 16 }}>Towards abc</div>
+            <div>{data.busStop.commonName}</div>
+            <div style={{ fontSize: 16 }}>{data.busStop.towards}</div>
           </div>
         </div>
 
@@ -92,8 +115,13 @@ export default async function handler(req: NextRequest) {
               fontWeight: "normal",
             }}
           >
-            <Row number={1} inTime="1 min" />
-            <Row number={2} inTime="2 min" />
+            {data.busStop.arrivals.map((arrival: any) => (
+              <Row
+                key={arrival.lineName}
+                number={arrival.lineName}
+                inTime={arrival.timeToStation}
+              />
+            ))}
           </div>
         </div>
       </div>
