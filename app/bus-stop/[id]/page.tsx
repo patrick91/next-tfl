@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 import { BusStop } from "../../../components/bus-stop";
 import { client } from "../../../lib/client";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const dynamic = "force-static";
+// export const revalidate = 0;
 
 const QUERY = gql`
   fragment BusStopFragment on BusStop {
@@ -20,18 +20,36 @@ const QUERY = gql`
       buses
       stopLetter
       towards
-      ...BusStopFragment @defer
+      ...BusStopFragment
     }
   }
 `;
 
 export default async function Stop({ params }: { params: { id: string } }) {
-  const { data } = await client.query({
-    query: QUERY,
-    variables: {
-      busStopId: params.id,
-    },
-  });
+  // const { data } = await client.query({
+  //   query: QUERY,
+  //   variables: {
+  //     busStopId: params.id,
+  //   },
+  // });
+
+  const response = await fetch(
+    "https://main--strawberry-graphql-e6z1v7.apollographos.net/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: QUERY.loc.source.body,
+        variables: {
+          busStopId: params.id,
+        },
+      }),
+    }
+  ).then((res) => res.json());
+
+  const data = response.data;
 
   return <BusStop stop={data.busStop} />;
 }

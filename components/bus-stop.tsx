@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { StopLetter } from "./stop-letter";
 
 export type Stop = {
