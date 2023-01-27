@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import { BusStop } from "../../../components/bus-stop";
 import { client } from "../../../lib/client";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 // export const revalidate = 0;
 
 const QUERY = gql`
@@ -41,7 +41,7 @@ export default async function Stop({ params }: { params: { id: string } }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        query: QUERY.loc.source.body,
+        query: QUERY.loc!.source.body,
         variables: {
           busStopId: params.id,
         },
