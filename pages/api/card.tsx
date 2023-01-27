@@ -71,69 +71,52 @@ export default async function handler(req: NextRequest) {
           fontSize: 20,
           fontWeight: 600,
           padding: 10,
+          paddingLeft: 40,
         }}
       >
+        <div
+          style={{
+            color: "white",
+            background: "black",
+            borderRadius: "100%",
+            width: 24,
+            height: 24,
+            fontSize: 16,
+            display: "flex",
+            fontFamily: "sans-serif",
+            justifyContent: "center",
+            alignItems: "center",
+            fontWeight: "bold",
+            lineHeight: 1.7,
+            position: "absolute",
+            top: 15,
+            left: 10,
+          }}
+        >
+          {data.busStop.stopLetter}
+        </div>
         <div style={{ fontSize: 24, display: "flex", marginBottom: 20 }}>
-          <div
-            style={{
-              color: "white",
-              background: "black",
-              borderRadius: "100%",
-              width: 24,
-              height: 24,
-              fontSize: 16,
-              display: "flex",
-              fontFamily: "sans-serif",
-              justifyContent: "center",
-              alignItems: "center",
-              fontWeight: "bold",
-              marginRight: 4,
-              lineHeight: 1.7,
-            }}
-          >
-            Q
-          </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {" "}
             <div>{data.busStop.commonName}</div>
-            <div style={{ fontSize: 16 }}>{data.busStop.towards}</div>
+            <div style={{ fontSize: 12 }}>{data.busStop.towards}</div>
           </div>
         </div>
 
-        <div style={{ fontSize: 24, display: "flex", marginBottom: 20 }}>
-          <div
-            style={{
-              opacity: 0,
-              color: "white",
-              background: "black",
-              borderRadius: "100%",
-              width: 24,
-              height: 24,
-              fontSize: 16,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              fontWeight: "bold",
-              marginRight: 4,
-            }}
-          >
-            Q
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              fontWeight: "normal",
-            }}
-          >
-            {data.busStop.arrivals.map((arrival: any) => (
-              <Row
-                key={arrival.lineName}
-                number={arrival.lineName}
-                inTime={arrival.timeToStation}
-              />
-            ))}
-          </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontWeight: "normal",
+          }}
+        >
+          {data.busStop.arrivals.map((arrival: any) => (
+            <Row
+              key={arrival.lineName}
+              number={arrival.lineName}
+              inTime={arrival.timeToStation}
+            />
+          ))}
         </div>
       </div>
     ),
