@@ -16,39 +16,37 @@ export type Stop = {
 
 export const BusStop = ({ stop }: { stop: Stop }) => {
   return (
-    <li key={stop.id}>
-      <Link
-        href={`/bus-stop/${stop.id}`}
-        className="grid items-start gap-4 grid-cols-[32px,1fr] mb-4"
-      >
-        <div className="self-center">
-          <StopLetter>{stop.stopLetter}</StopLetter>
-        </div>
-        <div>
-          <h1 className="font-bold text-2xl">
-            <div>
-              <p>{stop.commonName}</p>
-              <p className="text-sm">Towards: {stop.towards}</p>
-            </div>
-          </h1>
-          {stop.arrivals === undefined && <p>Loading...</p>}
-          {stop.arrivals !== undefined && stop.arrivals.length === 0 && (
-            <p>No arrival...</p>
-          )}
-        </div>
-        <div></div>
-        <div>
-          {stop.arrivals !== undefined && stop.arrivals.length > 0 && (
-            <ul>
-              {stop.arrivals.map((arrival, index) => (
-                <li key={index}>
-                  <strong>{arrival.lineName}</strong> in {arrival.timeToStation}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </Link>
+    <li
+      key={stop.id}
+      className="grid items-start gap-4 grid-cols-[32px,1fr] mb-4"
+    >
+      <div className="self-center">
+        <StopLetter>{stop.stopLetter}</StopLetter>
+      </div>
+      <div>
+        <h1 className="font-bold text-2xl">
+          <Link href={`/bus-stop/${stop.id}`}>
+            <p>{stop.commonName}</p>
+            <p className="text-sm">Towards: {stop.towards}</p>
+          </Link>
+        </h1>
+        {stop.arrivals === undefined && <p>Loading...</p>}
+        {stop.arrivals !== undefined && stop.arrivals.length === 0 && (
+          <p>No arrival...</p>
+        )}
+      </div>
+      <div></div>
+      <div>
+        {stop.arrivals !== undefined && stop.arrivals.length > 0 && (
+          <ul>
+            {stop.arrivals.map((arrival, index) => (
+              <li key={index}>
+                <strong>{arrival.lineName}</strong> in {arrival.timeToStation}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </li>
   );
 };
